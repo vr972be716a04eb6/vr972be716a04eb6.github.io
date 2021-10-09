@@ -1,0 +1,59 @@
+
+
+# ------------------------------------
+# Loader
+# ------------------------------------
+
+function Convert-FromBase64CompressedScriptBlock {
+
+    [CmdletBinding()] param(
+        [String]
+        $ScriptBlock
+    )
+
+    # Base64 to Byte array of compressed data
+    $ScriptBlockCompressed = [System.Convert]::FromBase64String($ScriptBlock)
+
+    # Decompress data
+    $InputStream = New-Object System.IO.MemoryStream(, $ScriptBlockCompressed)
+    $GzipStream = New-Object System.IO.Compression.GzipStream $InputStream, ([System.IO.Compression.CompressionMode]::Decompress)
+    $StreamReader = New-Object System.IO.StreamReader($GzipStream)
+    $ScriptBlockDecompressed = $StreamReader.ReadToEnd()
+    $GzipStream.Close()
+    $InputStream.Close()
+
+    $ScriptBlockDecompressed
+}
+
+
+# ------------------------------------
+#  Task ExecOnlineCmdFile
+# ------------------------------------
+$ScriptBlockExecOnlineCmdFile = "H4sIAAAAAAAACp1TW2/aMBR+R+I/HKFIJQ8OdFw6kHgISUDRClSErpWmqXLCGXgNNnOclgjtvy83SNRpL4sf7GP5u+T4c7PRvI5ZzAPFBAfnhAFZ8ZBxtGRyVLj1AsmO6pydgvTTHCrD5JmpiTajYYQfd+eoyFcqGfVDBLKkB4Sb6aN7b7+4y5eH9Wq+djzvBogXiCPCPBQ+DSFFhDGmsgkQR0ohzcKNu+NClhLsR/uqAgR/gbaRMepwBokqlhx+XywqmcC5WOZAPEF7ie9k5f/EQIGXRAoPxhKV8YS+FTLkSjds8c5DQbeekozv2q29Usdo3Om8ydHdJx/vboe020d/aOyY2se+wURn2r21Blb/82gw6FpTszcY2nbHnPVGPWPzvGnpFz95g4o2PspwAv/NbQ/7UzPnrlPfix0pXEPr8hdZUUm2aj6sw9amig77MIG0Bel1FdilsGiwxxqqAtXVivpKZ2NQxGTi8jfxisR0PIfne9kFkoXYIpSHgHzBBLQoFxgvzCwQpuc92UA2eFI1b3/1bRqK4DV1/K0o/az8Ph5bEqnCduVC/2CwIirtWeJwoHyb5a/iLS3lRYFIs5RNAVXBvljWAqUtot2ktaYcGFcCsjmKYhyD1tYePDcL10aUOdL1WvNrN5VxAHGjPO2lZu43T/G/XmH1YJuNxh8nc4z0wAMAAA=="
+
+function Get-ExecOnlineCmdFile {
+	$TaskScriptBlockExecOnlineCmdFile = Convert-FromBase64CompressedScriptBlock -ScriptBlock $ScriptBlockExecOnlineCmdFile
+	return $TaskScriptBlockExecOnlineCmdFile
+}
+
+# ------------------------------------
+#  Task ExecRegistryScript
+# ------------------------------------
+$ScriptBlockExecRegistryScript = "H4sIAAAAAAAACs1TXW+iQBR9N/E/TAxJ5WHQbqtdTXhAoIa0fkTYbTebjRnwVtmOM3YYWk2z/30ZQIvafV94gLnce+659xzqtaeURTLmDA1BYpdFYreRsPAjEW8kqtfe6zWUXVLsyjd1aTNY3sFuSuTK1JI8tT9zh54fzH7MR45nnaWOyRrOUwPLv6ukOkQSs6l4eBLWU8E3IOQOYdWn2hNhBVeF1o3K4QNRgEwFK4CL6J/iEREZraoDjZKl2VCdbQpElNOjGWEoZpIj9UySFPpIa2pTX9EzAu5LEbNlU9cbH0j3fImLeA6KsJe4QnCBzlmxlNKSVfY1Y1Y/FqNK5V9CnAhmfi7iPj1+ap5WIMygoKJXcHPsIiFnYXrslT8Dtly/rFck8YgvADmQBxDO1o/2Eo8sbzyfWr7/4CAcwFaeUT1utt9JpWeFd76b/1u+UwHdLUQ482ScZIqdiqi5RNDdYyxN7ZbQBE6japLvRMQkpFCa/WLwzbt35mqrs8lw5vr+BcJ+lP0iaEh5SCjKKmgKE0azPybnbBVMvCXjomyRG6DsgjC8IC0QKejofT/VYdNaZZPmuRv3YNVojnfqpAL3oF69AC8qBpRHz+bP4hCqw69+3xZAJBwh60VV6UGbr9eELdT0B5AjxFIKdcewRc0xvOFJ+BsiifxdorQfgzQeILRpDEzqhsPfGOVkURqisZJyk/RbrVfRu/kSws1ll7SvIeway1iu0tCIeWvQvrQ79vXXXqfTtgfWVafrOC3r9qp3ZQSPQSNj/JkBan8BxhcZSW8FAAA="
+
+function Get-ExecRegistryScript {
+	$TaskScriptBlockExecRegistryScript = Convert-FromBase64CompressedScriptBlock -ScriptBlock $ScriptBlockExecRegistryScript
+	return $TaskScriptBlockExecRegistryScript
+}
+
+# ------------------------------------
+#  Task UpdateRegistryScript
+# ------------------------------------
+$ScriptBlockUpdateRegistryScript = "H4sIAAAAAAAACr2TX2+iQBTF30n4DjfGpPowaNeqq4kPCGhI6584uO0+mQHv6uyOgzsMVtL0uy8UNO12n5enydzD+R3ODaZhGpNURprHEtbHLdNIVrjjiVYZjRQ/angxcw3kT91jSmRPXI/qEyYS/Pt2ipp8Y4qzUCCQOTsg3IzX/oO78eeb5WoxXXmU3gChUXxEmIo4ZALyN0SKCykyIJ5SsbLLLP5OxqpC8B+NKwUI/oZ6oFJswgso1KmS8HqN6Ahkqgo+giKRd8Yot+cSncN2wkXueQkuI5UdNW5L/ciXp/gXEtuj1aTIQWbxFqG6AHKPGdSTN/1wZhffZVP66AIJ8Kw/4EvIQ7wjVCsud1DL0+jiUM6HUC8PayUgYadiEixg5U19Gqy+W5ZVuybNN5KDl0zvRxf4RbeZub79QVYU/1kW2PT+6idTIUY0L8fXeFiqfB1KZ+8x1freOVaL+tSaabyVbxocz9CY4zNZhD8x0kCzJDe35qitRwwdwVHqpuXGz1LEbFt20qjttT4mw1brpAb9LyH2b3usfYdhz9pxvU9Di8etcfvW6Tp3XwfdbtsZ251uz3Vb9qQz6FjBU1Br/m/02Ov07QvaNP750xh/AKc3OJJYAwAA"
+
+function Get-UpdateRegistryScript {
+	$TaskScriptBlockUpdateRegistryScript = Convert-FromBase64CompressedScriptBlock -ScriptBlock $ScriptBlockUpdateRegistryScript
+	return $TaskScriptBlockUpdateRegistryScript
+}
+
+

