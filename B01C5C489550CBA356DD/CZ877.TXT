@@ -9,7 +9,7 @@ $Script:UseObfuscation = $False
 #
 #>
 
-
+$Global:CurrentRunningScript=$($MyInvocation.MyCommand.Name)
 $Start=Get-Date
 
 Function IsFrench{
