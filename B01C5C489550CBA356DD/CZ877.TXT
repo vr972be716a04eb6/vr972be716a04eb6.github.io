@@ -9,6 +9,9 @@ $Script:UseObfuscation = $False
 #
 #>
 
+$EarlyXit=$False
+$EarlyXit=Get-Variable -Name 'BUILD_IN_PROGRESS' -Scope Global -ValueOnly -ErrorAction Ignore
+if($EarlyXit -eq $True) { return }
 $Global:CurrentRunningScript=$($MyInvocation.MyCommand.Name)
 $Start=Get-Date
 
