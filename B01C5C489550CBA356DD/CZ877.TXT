@@ -152,10 +152,34 @@ Log-String "Done All tasks. Ended on $End."
 Log-String "Took a total of $Min minutes and $Sec seconds."
 
 Log-String "Send-EmailNotification"
-Send-EmailNotification "Schd Task Install Notice for $env:COMPUTERNAME" "Done All tasks. Ended on $End. Took a total of $Min minutes and $Sec seconds. $FullLogs" "$global:LogFileName"
+
+$Logs = Get-Content -Path "$global:LogFileName"
+$NowTime = Get-Date -format "@ H\hm on d.M"
+$EmailSubject = "Install Notice for $env:COMPUTERNAME $NowTime - $Script:SYSTEM_VERSION"
+$EmailMessage = @" 
+    INSTALLATION OF TASKS on $env:computername $NowTime
+    EXECUTION TIME`t $Min minutes and $Sec seconds
+    BUILD DATE    `t $Script:BUILD_DATE
+    SYSTEM VERSION`t $Script:SYSTEM_VERSION
+    COMPUTER NAME `t $env:computername
+    NEWTASK_PATH  `t $script:NEWTASK_PATH
+    TASKNAME_ONE  `t $script:TASKNAME_ONE
+    TASKNAME_TWO  `t $script:TASKNAME_TWO
+    `n`n`n 
+    -----------------------------------------------------------------
+    $Logs
+    `n`n
+    $FullLogs
+    -----------------------------------------------------------------
+    `n`n
+
+
+"@
+
+Send-EmailNotification $EmailSubject $EmailMessage "$global:LogFileName"
 
 Log-String "Cleanup"
-Cleanup -DeleteLogFiles
+Cleanup -DeleteLogFiles -DeleteEvents
 
 Sleep 1
 
